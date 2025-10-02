@@ -8,8 +8,10 @@ from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 from diffusion_policy.model.common.normalizer import LinearNormalizer
 from diffusion_policy.policy.base_image_policy import BaseImagePolicy
-from diffusion_policy.model.diffusion.conditional_unet1d import ConditionalUnet1D
+# from diffusion_policy.model.diffusion.conditional_unet1d import ConditionalUnet1D
 # from diffusion_policy.model.diffusion.conditional_unet1d_0724 import ConditionalUnet1D
+from diffusion_policy.model.diffusion.conditional_unet1d_rt import ConditionalUnet1D
+
 from diffusion_policy.model.diffusion.mask_generator import LowdimMaskGenerator
 from diffusion_policy.common.robomimic_config_util import get_robomimic_config
 from robomimic.algo import algo_factory

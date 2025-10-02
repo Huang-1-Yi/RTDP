@@ -82,7 +82,7 @@ dataset: realtime_diffusion_policy.dataset.robomimic.replay_image_dataset_rt_v8.
 dataset_path: data/robomimic/datasets/${task_name}/${task_name}_abs.hdf5
 
 policy:
-  _target_: realtime_diffusion_policy.policy.robomimic.diffusion_unet_hybrid_image_policy_rt_v4.SlidingWindowDiffusionPolicy
+  _target_: realtime_diffusion_policy.policy.robomimic.diffusion_unet_hybrid_image_policy_rt_v5.SlidingWindowDiffusionPolicy
   shape_meta: ${shape_meta}
   
   noise_scheduler:

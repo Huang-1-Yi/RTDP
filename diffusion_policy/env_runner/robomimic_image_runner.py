@@ -23,6 +23,7 @@ import robomimic.utils.file_utils as FileUtils
 import robomimic.utils.env_utils as EnvUtils
 import robomimic.utils.obs_utils as ObsUtils
 
+import time
 
 def create_env(env_meta, shape_meta, enable_render=True):
     modality_mapping = collections.defaultdict(list)
@@ -37,7 +38,6 @@ def create_env(env_meta, shape_meta, enable_render=True):
         use_image_obs=enable_render, 
     )
     return env
-
 
 class RobomimicImageRunner(BaseImageRunner):
     """
@@ -276,6 +276,11 @@ class RobomimicImageRunner(BaseImageRunner):
                 leave=False, mininterval=self.tqdm_interval_sec)
             
             done = False
+
+            # 添加时间记录变量
+            total_policy_time = 0.0
+            policy_calls = 0
+
             while not done:
                 # create obs dict
                 np_obs_dict = dict(obs)
@@ -288,10 +293,18 @@ class RobomimicImageRunner(BaseImageRunner):
                 obs_dict = dict_apply(np_obs_dict, 
                     lambda x: torch.from_numpy(x).to(
                         device=device))
-
+                
+                # 测量策略执行时间
+                start_time = time.perf_counter()  # 高精度计时器
                 # run policy
                 with torch.no_grad():
                     action_dict = policy.predict_action(obs_dict)
+                end_time = time.perf_counter()
+                elapsed = end_time - start_time
+                # 累加时间和调用次数
+                total_policy_time += elapsed
+                policy_calls += 1
+
 
                 # device_transfer
                 np_action_dict = dict_apply(action_dict,
@@ -351,6 +364,12 @@ class RobomimicImageRunner(BaseImageRunner):
             value = np.mean(value)
             log_data[name] = value
 
+
+        # 添加策略执行时间指标
+        if policy_calls > 0:
+            avg_policy_time = total_policy_time / policy_calls
+            log_data['policy/avg_inference_time_ms'] = avg_policy_time * 1000
+            
         return log_data
 
 
